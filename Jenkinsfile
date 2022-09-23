@@ -1,39 +1,45 @@
 pipeline {
 
+  environment {
+    dockerimagename = "khanwahed/app"
+    dockerImage = ""
+  }
+
   agent any
 
   stages {
 
     stage('Checkout Source') {
       steps {
-        git url:'https://github.com/khangohan21/AXYYA-DIGITAL.git', branch:'main'
+        git 'https://github.com/shazforiot/nodeapp_test.git'
       }
     }
-    
-      stage("Build image") {
-            steps {
-                script {
-                    myapp = docker.build(" khanwahed/app:leatest}")
-                }
-            }
-        }
-    
-      stage("Push image") {
-            steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-                            app.push("latest")
-                            app.push("leatest")
-                    }
-                }
-            }
-        }
 
-    
-    stage('Deploy App') {
+    stage('Build image') {
+      steps{
+        script {
+          dockerImage = docker.build dockerimagename
+        }
+      }
+    }
+
+    stage('Pushing Image') {
+      environment {
+               registryCredential = 'dockerhublogin'
+           }
+      steps{
+        script {
+          docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
+            dockerImage.push("latest")
+          }
+        }
+      }
+    }
+
+    stage('Deploying App to Kubernetes') {
       steps {
         script {
-          kubernetesDeploy(configs: "deployment.yaml", kubeconfigId: "mykubeconfig")
+          kubernetesDeploy(configs: "deployment.yml", kubeconfigId: "kubernetes")
         }
       }
     }
