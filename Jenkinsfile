@@ -13,7 +13,7 @@ pipeline {
       stage("Build image") {
             steps {
                 script {
-                    myapp = docker.build(" khanwahed/app:${env.BUILD_ID}")
+                    myapp = docker.build(" khanwahed/app:leatest}")
                 }
             }
         }
@@ -23,7 +23,7 @@ pipeline {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
                             app.push("latest")
-                            app.push("${env.BUILD_ID}")
+                            app.push("leatest")
                     }
                 }
             }
