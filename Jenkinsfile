@@ -6,14 +6,14 @@ pipeline {
 
     stage('Checkout Source') {
       steps {
-        git url:'https://github.com/vamsijakkula/hellowhale.git', branch:'master'
+        git url:'https://github.com/khangohan21/AXYYA-DIGITAL.git', branch:'main'
       }
     }
     
       stage("Build image") {
             steps {
                 script {
-                    myapp = docker.build("vamsijakkula/hellowhale:${env.BUILD_ID}")
+                    myapp = docker.build(" khanwahed/app:${env.BUILD_ID}")
                 }
             }
         }
@@ -22,8 +22,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-                            myapp.push("latest")
-                            myapp.push("${env.BUILD_ID}")
+                            app.push("latest")
+                            app.push("${env.BUILD_ID}")
                     }
                 }
             }
@@ -33,7 +33,7 @@ pipeline {
     stage('Deploy App') {
       steps {
         script {
-          kubernetesDeploy(configs: "hellowhale.yml", kubeconfigId: "mykubeconfig")
+          kubernetesDeploy(configs: "deployment.yaml", kubeconfigId: "mykubeconfig")
         }
       }
     }
